@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Quieres ser mi novia?</title>
+    <style>
+          body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding-bottom: 60px;
+            background: linear-gradient(135deg, #ff6ec4, #784ba0);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 0.3) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Corazones cayendo */
+        .heart {
+            position: absolute;
+            color: #ff8ac9;
+            font-size: 1.5em;
+            animation: fall 5s linear infinite, heartSparkle 1s ease-in-out infinite alternate;
+            opacity: 0;
+            user-select: none;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -5%;
+                transform: translateX(0) rotate(45deg) scale(1);
+                opacity: 0;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                top: 105%;
+                transform: translateX(var(--randomX)) rotate(45deg) scale(0.7);
+                opacity: 0;
+            }
+        }
+
+        @keyframes heartSparkle {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            animation: float 3s linear infinite, sparkle 1s ease-in-out infinite alternate;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(0.8); opacity: 0; }
+        }
+
+        @keyframes sparkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 0.5; }
+        }
+
+        /* Parpadeo suave del título con glow y brillo */
+        h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Efecto glow */
+            z-index: 2;
+            animation: brightness 1.5s ease-in-out infinite alternate; /* Efecto brillo */
+        }
+
+        @keyframes brightness {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.3); }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            z-index: 2;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        button::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            opacity: 0;
+            transform: rotate(45deg) translate(0, 0);
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.1) 100%);
+            transition: opacity 0.3s ease-in-out, transform 0.4s ease-out;
+        }
+
+        button:hover::after {
+            opacity: 1;
+            transform: rotate(45deg) translate(20%, -20%);
+        }
+
+        #siBtn {
+            background-color: #ff8ac9;
+            transition: background-color 0.3s ease; /* Transición suave */
+        }
+
+        #siBtn:hover {
+            background-color: #f481c0;
+        }
+
+        #noBtn {
+            background-color: #9775b7;
+            transition: background-color 0.3s ease; /* Transición suave */
+            position: absolute; /* Para que se pueda mover libremente */
+        }
+
+        #noBtn:hover {
+            background-color: #8a6ab2;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #respuesta {
+            margin-top: 40px;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            opacity: 0; /* Inicialmente invisible para la transición */
+            transition: opacity 0.5s ease-in-out; /* Transición suave */
+            z-index: 2;
+        }
+
+        .show-respuesta {
+            opacity: 1 !important;
+        }
+
+        .te-amo {
+            margin-top: 30px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #fce4ec;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            border: 2px solid white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 2;
+        }
+
+        .youtube-player {
+            margin-top: 50px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+
+        .youtube-player iframe {
+            display: block;
+        }
+
+        .esquina-inferior-derecha {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        .esquina-superior-derecha {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, rgba(255, 110, 196, 0.7), rgba(120, 75, 160, 0.7));
+            padding: 8px 15px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2;
+        }
+
+        #pixel-box {
+            margin-top: 30px;
+            width: 220px;
+            height: 90px;
+            background-color: #e91e63;
+            filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: filter 0.3s ease, color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+            color: transparent;
+            font-size: 1.3em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            z-index: 2;
+        }
+
+        #pixel-box:hover {
+            filter: blur(0px);
+            color: #fce4ec;
+            background-color: #c2185b;
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        }
+
+        .show-pixel-box {
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>¿Quieres ser mi novia?</h1>
+    <div class="buttons">
+        <button id="siBtn">Sí</button>
+        <button id="noBtn">No</button>
+    </div>
+    <div id="respuesta"></div>
+
+    <div class="te-amo">Te dedico esta canción</div>
+
+    <div class="youtube-player">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/QEsU_FbcKjo?si=Xgu2eKP8Ha5qWkky" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+
+    <div class="esquina-superior-derecha">
+        21 DCM <span style="color: white;">🤍</span>
+    </div>
+
+    <div id="pixel-box">Presiona aquí</div>
+
+    <script>
+	const siBtn = document.getElementById('siBtn');
+        const noBtn = document.getElementById('noBtn');
+        const respuestaDiv = document.getElementById('respuesta');
+        const pixelBox = document.getElementById('pixel-box');
+        const body = document.querySelector('body');
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * 20 + 5;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            const startX = Math.random() * window.innerWidth;
+            particle.style.left = `${startX}px`;
+            const animationDuration = Math.random() * 2 + 2;
+            particle.style.animationDuration = `${animationDuration}s`;
+            particle.style.top = '100vh';
+            particle.style.opacity = 0;
+
+            body.appendChild(particle);
+
+            particle.addEventListener('animationend', () => {
+                particle.remove();
+            });
+
+            setTimeout(() => {
+                particle.style.opacity = 1;
+            }, Math.random() * 500);
+        }
+
+        setInterval(createParticle, 300);
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.textContent = '🤍';
+            const startX = Math.random() * window.innerWidth;
+            const randomOffset = Math.random() * 100 - 50; // Aún más cerca del centro
+            heart.style.left = `${startX + randomOffset}px`;
+            const randomDuration = Math.random() * 4 + 3; // Un poco más de duración para que no se saturen tan rápido
+            heart.style.animationDuration = `${randomDuration}s`;
+            heart.style.setProperty('--randomX', `${Math.random() * 80 - 40}px`); // Menos movimiento horizontal
+            heart.style.fontSize = `${Math.random() * 0.5 + 0.7}em`; // Tamaños más pequeños
+            heart.style.opacity = 0;
+            body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.style.opacity = 1;
+            }, 50);
+
+            heart.addEventListener('animationend', () => {
+                heart.remove();
+            });
+        }
+
+        setInterval(createHeart, 750); // Aumentamos el intervalo para que caigan con menos frecuencia
+
+        function moveNoButton() {
+            const maxX = window.innerWidth - noBtn.offsetWidth;
+            const maxY = window.innerHeight - noBtn.offsetHeight;
+
+            const newX = Math.random() * maxX;
+            const newY = Math.random() * maxY;
+
+            noBtn.style.left = `${newX}px`;
+            noBtn.style.top = `${newY}px`;
+        }
+
+        siBtn.addEventListener('click', () => {
+            respuestaDiv.textContent = 'Te amo, gracias 🤍. Sabia que elegirias que si jajaja';
+            respuestaDiv.style.color = '#fce4ec'; /* Un color más suave */
+            respuestaDiv.style.textShadow = '0 0 10px rgba(255, 255, 255, 0.8)'; /* Efecto glow */
+            respuestaDiv.style.backgroundColor = 'transparent'; /* Quitamos el fondo negro */
+            respuestaDiv.style.padding = '15px'; /* Mantenemos el padding para que no se vea pegado */
+            respuestaDiv.style.borderRadius = '10px'; /* Mantenemos el borde redondeado */
+            respuestaDiv.style.fontSize = '1.8em';
+            respuestaDiv.classList.add('show-respuesta');
+            pixelBox.classList.add('show-pixel-box');
+            // Agregamos una animación de brillo
+            respuestaDiv.style.animation = 'brightness 1.5s ease-in-out infinite alternate';
+
+            // Definimos la animación si no está ya definida en CSS
+            let styleSheet = document.createElement("style");
+            styleSheet.type = "text/css";
+            styleSheet.innerText = `@keyframes brightness {
+                0% { filter: brightness(1); }
+                100% { filter: brightness(1.3); }
+            }`;
+            document.head.appendChild(styleSheet);
+        });
+
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('click', () => { // También reacciona al clic (opcional)
+            respuestaDiv.textContent = 'Ok, esta bien. CHAOOOOOOO 👍🏻👏🏻';
+            respuestaDiv.style.color = '#f39c12';
+            respuestaDiv.style.textShadow = '1px 1px 2px rgba(0, 0, 0, 0.2)';
+            respuestaDiv.style.backgroundColor = 'transparent';
+            respuestaDiv.style.padding = '0';
+            respuestaDiv.style.borderRadius = '0';
+            respuestaDiv.style.fontSize = '1.5em';
+            respuestaDiv.classList.remove('show-respuesta');
+            setTimeout(() => {
+                respuestaDiv.textContent = ''; // Limpiar el texto después de la transición
+            }, 500);
+            pixelBox.classList.remove('show-pixel-box');
+            pixelBox.style.opacity = 0;
+            moveNoButton(); // Asegurarse de que se mueva también al hacer clic
+        });
+
+        pixelBox.addEventListener('click', () => {
+            pixelBox.textContent = 'Espero que me dures xEVER, osea por siempre 🤍';
+            pixelBox.style.filter = 'blur(0px)';
+            pixelBox.style.color = '#fce4ec';
+            pixelBox.style.backgroundColor = '#ad1457';
+        });
+
+        pixelBox.addEventListener('mouseover', () => {
+            pixelBox.style.filter = 'blur(0px)';
+            pixelBox.style.color = '#fce4ec';
+            pixelBox.style.backgroundColor = '#c2185b';
+            pixelBox.style.opacity = 1;
+        });
+
+        pixelBox.addEventListener('mouseout', () => {
+            if (pixelBox.textContent === 'Presiona aquí') {
+                pixelBox.style.filter = 'blur(15px)';
+                pixelBox.style.color = 'transparent';
+            }
+        });
+    </script>
+</body>
+</html>
